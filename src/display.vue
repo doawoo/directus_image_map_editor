@@ -11,6 +11,7 @@
     mixins: [mixin],
     computed: {
       displayValue() {
+        console.log(this)
         if (this.value)
           return this.value.toLowerCase();
       }

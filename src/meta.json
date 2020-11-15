@@ -1,7 +1,7 @@
 {
-  "name": "image_map_editor",
+  "name": "image-map",
   "version": "1.0.0",
   "icon": "person",
-  "types": ["string"],
+  "types": ["json"],
   "options": {}
 }
