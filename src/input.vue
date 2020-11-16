@@ -1,7 +1,11 @@
 <template>
   <div>
     <span v-if="this.value != null">
-      <image-map :value="this.value" @input="zones => change({ zones })"/>
+     <h3>MAP</h3>
+      <annotatable :annotations.sync="this.value.annotations" :options="this.value.options" input="input-menu">
+		    <img id="image" draggable='false' ondragstart="return false;" :src="this.value.src">
+		  </annotatable>
+      <output :annotations="annotations"></Output>
     </span>
   </div>
 </template>
@@ -9,12 +13,15 @@
 <script>
 import Vue from 'vue'
   import mixin from "@directus/extension-toolkit/mixins/interface";
-  import ImageMap from './ImageMap'
+  import Annotatable from './Annotatable.vue'
+  import Output from './Output.vue'
+
+  import { EventBus } from './EventBus.js';
 
   export default {
     mixins: [mixin],
     components: {
-      ImageMap
+      Annotatable
     },
     methods: {
       change(changes) {
@@ -28,9 +35,11 @@ import Vue from 'vue'
             const node = e.addedNodes[0]
             if (node.attributes && node.attributes.class && node.attributes.class.value == "v-card card text-background") {
               const url = node.querySelector('img').src.split('?')[0]
+              this.srcUrl = url;
               this.value = {
-                source: url,
-                zones: [],
+                annotations: [],
+                src: url,
+                options: {"a": ["foo"]}
               }
             }
           }
