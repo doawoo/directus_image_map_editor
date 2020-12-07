@@ -18,6 +18,17 @@ import Vue from 'vue'
 
   import { EventBus } from './EventBus.js';
 
+  async function fetchPlaces() {
+    const jsonData = await fetch('/_/items/place', {method: 'GET', credentials: 'include'})
+    .then((resp) => resp.json())
+
+    console.log(`Fetched places!`)
+
+    return jsonData.data.map((item) => {
+      return {id: item.id, name: item.name}
+    })
+  }
+
   export default {
     mixins: [mixin],
     components: {
@@ -29,7 +40,8 @@ import Vue from 'vue'
       },
     },
     mounted() {
-      this.observer = new MutationObserver((events) => {
+      fetchPlaces().then(places => {
+        this.observer = new MutationObserver((events) => {
         events.forEach(e => {
           if (e.addedNodes.length > 0) {
             const node = e.addedNodes[0]
@@ -39,7 +51,7 @@ import Vue from 'vue'
               this.value = {
                 annotations: [],
                 src: url,
-                options: {"a": ["foo"]}
+                options: places
               }
             }
           }
@@ -47,6 +59,7 @@ import Vue from 'vue'
       })
       const config = { attributes: false, childList: true, subtree: true };
       this.observer.observe(document.querySelector(".input-single-file"), config)
+      })
     }
   }
 </script>

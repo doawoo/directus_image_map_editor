@@ -2,18 +2,12 @@
 	<div class="menu-select" @mousedown.stop @mouseup.stop>
 		<div class="input" @click="toggle">{{selected ? selected : 'selected'}}</div>
 		<ul class="dropdown" v-show="open">
-			<li class="group" v-for="(group, items) in options" v-bind:key="group">
-				<span>{{group}}</span>
-				<ul class="items">
-					<li class="item" v-for="item in items" v-bind:key="item">
-						<label>
-							{{item}}
-							<input type="radio" v-model="selected" @change="change" :value="item">
-						</label>
-					</li>
-				</ul>
+			<li class="group" v-for="(item) in options" v-bind:key="item">
+				<label>
+					{{item.name}}
+					<input type="radio" v-model="selected" @change="change" :value="item">
+				</label>
 			</li>
-			
 		</ul>
 	</div>	
 </template>
@@ -26,7 +20,6 @@ export default {
 		return {
 			selected: '',
 			open: false
-
 		}
 	},
 	methods: {
@@ -35,7 +28,7 @@ export default {
 		},
 		change() {
 			this.toggle();
-			EventBus.$emit('edit', {label: this.selected})
+			EventBus.$emit('edit', {label: this.selected.id})
 		}
 	}
 }
@@ -49,6 +42,7 @@ export default {
 		z-index: 100;
 		position: absolute;
 		left: 0;
+		color: black;
 	}
 	.input {
 		border: 1px #999 solid;
