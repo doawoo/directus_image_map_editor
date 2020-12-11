@@ -35,31 +35,42 @@ import Vue from 'vue'
       Annotatable
     },
     methods: {
-      change(changes) {
-        console.log( { ...this.value, ...changes });
+      emitValue() {
+        console.log("emitValue", this.value.annotations)
+        this.$emit("input", this.value.annotations)
       },
-    },
-    mounted() {
-      fetchPlaces().then(places => {
+      setImage(newUrl) {
+        this.srcUrl = newUrl;
+        console.log("Set image source URL", this.srcUrl);
+      },
+      fetchImage() {
+        const node = document.getElementsByClassName("v-card card text-background")[0]
+        if (node && node.querySelector('img')) {
+          const image = node.querySelector('img').src.split('?')[0]
+          this.setImage(image)
+        } else {
+          console.log("No image yet! Going to watch for mutators to detect it...")
+          this.beginListenImage()
+        }
+      },
+      beginListenImage() {
         this.observer = new MutationObserver((events) => {
-        events.forEach(e => {
-          if (e.addedNodes.length > 0) {
-            const node = e.addedNodes[0]
-            if (node.attributes && node.attributes.class && node.attributes.class.value == "v-card card text-background") {
-              const url = node.querySelector('img').src.split('?')[0]
-              this.srcUrl = url;
-              this.value = {
-                annotations: [],
-                src: url,
-                options: places
+          events.forEach(e => {
+            if (e.addedNodes.length > 0) {
+              const node = e.addedNodes[0]
+              if (node.attributes && node.attributes.class && node.attributes.class.value == "v-card card text-background") {
+                const url = node.querySelector('img').src.split('?')[0]
+                this.setImage(url)
               }
             }
-          }
+          })
         })
-      })
-      const config = { attributes: false, childList: true, subtree: true };
-      this.observer.observe(document.querySelector(".input-single-file"), config)
-      })
+        const config = { attributes: false, childList: true, subtree: true }
+        this.observer.observe(document.querySelector(".input-single-file"), config)
+      }
+    },
+    mounted() {
+      setTimeout(() => this.fetchImage(), 1000)
     }
   }
 </script>
